@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="HowlNotes is a complete full-stack notes web application built as an external dogfood consumer of HowlFrame, verifying browser compilation and native persistent record stores.">
+    <link rel="canonical" href="https://howlcipher.github.io/howlnotes/">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="HowlNotes">
+    <meta property="og:title" content="HowlNotes | Knowledge Notebook &amp; Dogfood Consumer">
+    <meta property="og:description" content="A complete full-stack notes web application proving HowlFrame capability boundaries, browser compilation, and native state persistence.">
+    <meta property="og:url" content="https://howlcipher.github.io/howlnotes/">
+    <meta property="og:image" content="https://howlcipher.github.io/howlnotes/social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="HowlNotes architecture and knowledge card preview">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HowlNotes | Knowledge Notebook &amp; Dogfood Consumer">
+    <meta name="twitter:description" content="A complete full-stack notes web application proving HowlFrame capability boundaries, browser compilation, and native state persistence.">
+    <meta name="twitter:image" content="https://howlcipher.github.io/howlnotes/social-preview.png">
+    <meta name="twitter:image:alt" content="HowlNotes architecture and knowledge card preview">
+
+    <title>HowlNotes | Knowledge Notebook &amp; HowlFrame Dogfood Consumer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <div class="layout-container">
+        <!-- Site Header -->
+        <header class="site-header">
+            <div class="header-top">
+                <div class="header-brand">
+                    <a href="https://howlcipher.github.io/howlnotes/" class="brand-sig">HOWL <span>//</span> HOWLNOTES</a>
+                    <span class="subsystem-tag">SYS_ID: HN-KNOW-03</span>
+                </div>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="btn-theme-toggle" type="button" aria-pressed="false">
+                        <span aria-hidden="true">☾</span> [DARK_MODE]
+                    </button>
+                    <a href="https://github.com/howlcipher/howlnotes" class="btn-tech btn-tech-primary" target="_blank" rel="noreferrer">
+                        [ VIEW ON GITHUB ]
+                    </a>
+                </div>
+            </div>
+
+            <!-- Ecosystem Navigation Strip -->
+            <div class="howl-ecosystem-bar" aria-label="Howl Ecosystem Navigation">
+                <div class="eco-label">HOWL ECOSYSTEM</div>
+                <nav class="eco-nav">
+                    <a href="https://howlcipher.github.io/howlframe/" class="eco-link">HowlFrame // VM</a>
+                    <a href="https://howlcipher.github.io/howlplane/" class="eco-link">HowlPlane // Control</a>
+                    <a href="https://howlcipher.github.io/howlnotes/" class="eco-link active" aria-current="page">HowlNotes // Knowledge</a>
+                    <a href="https://howlcipher.github.io/changeops/" class="eco-link">ChangeOps // Authority</a>
+                    <a href="https://howlcipher.github.io/howlboard/" class="eco-link">HowlBoard // Telemetry</a>
+                </nav>
+            </div>
+
+            <!-- In-Page Section Navigation -->
+            <nav class="section-nav" aria-label="Page sections">
+                <span class="section-nav-label">READ_PATH:</span>
+                <a href="#overview">01_Overview</a>
+                <a href="#architecture">02_Architecture</a>
+                <a href="#pipeline">03_Pipeline</a>
+                <a href="#security">04_Security</a>
+                <a href="#dogfood">05_Findings</a>
+                <a href="#quickstart">06_QuickStart</a>
+                <a href="#reports">07_ReportsIndex</a>
+            </nav>
+        </header>
+
+        <!-- Main Content Surface -->
+        <main id="main-content">
+            <!-- Hero Panel -->
+            <section class="hero-panel" aria-labelledby="main-title">
+                <div class="hero-banner">
+                    <span>SPEC_VER // 1.0.0 (HFBC v1 PIN: 7cdc5116)</span>
+                    <span>ROLE: EXTERNAL DOGFOOD CONSUMER &amp; KNOWLEDGE TERMINAL</span>
+                </div>
+                <div class="hero-body">
+                    <div class="hero-header-block">
+                        <p class="hero-kicker">// engineering field notebook / howlframe dogfood consumer</p>
+                        <h1 id="main-title" class="hero-title">HowlNotes <span class="jp-sub">ハウルノーツ // 2026</span></h1>
+                        <p class="hero-lead">
+                            HowlNotes is a genuinely complete notes web application built as an external dogfood consumer of HowlFrame. It determines how much ordinary application development can be expressed through HowlFrame DSLs and verifies persistent record stores under capability boundaries.
+                        </p>
+                    </div>
+
+                    <div class="axiom-card" role="region" aria-label="Core Philosophy">
+                        <strong>AXIOM // FULL-STACK HOWLFRAME.</strong> HowlNotes does not reside inside the HowlFrame compiler tree or fake execution with handwritten wrappers. The backend runs on HowlFrame's standalone bytecode VM, the frontend is compiled from <code>web_app</code> DSL definitions, and data is stored in HowlFrame's native record store.
+                    </div>
+
+                    <div class="hero-actions">
+                        <a href="https://github.com/howlcipher/howlnotes" class="btn-tech btn-tech-primary" target="_blank" rel="noreferrer">
+                            [ CLONE REPOSITORY ]
+                        </a>
+                        <a href="#architecture" class="btn-tech">
+                            [ SYSTEM ARCHITECTURE ]
+                        </a>
+                        <a href="#dogfood" class="btn-tech">
+                            [ DOGFOOD FINDINGS ]
+                        </a>
+                    </div>
+
+                    <!-- Hero Architecture Diagram -->
+                    <div class="hero-diagram-wrap" aria-label="HowlNotes Full-Stack Architecture">
+                        <div class="diagram-header">
+                            <span>DATA_FLOW // BROWSER CLIENT ↔ BYTECODE VM ↔ PERSISTENT STORE</span>
+                            <span>PERSISTENCE: ATOMIC JSON</span>
+                        </div>
+                        <div class="signal-grid">
+                            <div class="notebook-step step-client">
+                                <div class="nb-header">01 // CLIENT</div>
+                                <div class="nb-body">
+                                    <div class="nb-title">web_app DSL</div>
+                                    <div class="nb-desc">Compiled to vanilla browser JavaScript (<code>static/app.js</code>). Handles DOM updates and async fetch.</div>
+                                    <div class="nb-tag">[TARGET: JAVASCRIPT]</div>
+                                </div>
+                            </div>
+                            <div class="notebook-step step-router">
+                                <div class="nb-header">02 // ROUTER</div>
+                                <div class="nb-body">
+                                    <div class="nb-title">Notes API Gateway</div>
+                                    <div class="nb-desc">HTTP listener handling REST/RPC routes, CORS middleware, and input sanitization.</div>
+                                    <div class="nb-tag">[PORT: 8088]</div>
+                                </div>
+                            </div>
+                            <div class="notebook-step step-runtime">
+                                <div class="nb-header">03 // RUNTIME</div>
+                                <div class="nb-body">
+                                    <div class="nb-title">HowlFrame VM</div>
+                                    <div class="nb-desc">Executes <code>build/backend.hfbc</code> under explicit runner capabilities: <code>network, database, filesystem</code>.</div>
+                                    <div class="nb-tag">[CAPS: ENFORCED]</div>
+                                </div>
+                            </div>
+                            <div class="notebook-step step-store">
+                                <div class="nb-header">04 // PERSIST</div>
+                                <div class="nb-body">
+                                    <div class="nb-title">Native Store</div>
+                                    <div class="nb-desc">Atomically synchronized structured records at <code>file://data/notes.json</code>. Survives restarts.</div>
+                                    <div class="nb-tag">[STATE: DURABLE]</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 01 Overview -->
+            <section id="overview" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 01</span> Dogfood Mission &amp; Verified Revision</h2>
+                    <span class="subsystem-tag">HN-MOD-OVERVIEW</span>
+                </div>
+                <div class="tech-body">
+                    <p>
+                        HowlNotes was created as an honest, external testbed to evaluate the HowlFrame language and toolchain under realistic full-stack application conditions. By building a complete, functioning CRUD application with persistent data storage and a responsive web interface, HowlNotes surfaces real compiler bugs, AST ergonomics friction, and capability boundary semantics.
+                    </p>
+
+                    <div class="side-note">
+                        <div class="side-note-title">Pinned Toolchain Revision</div>
+                        HowlNotes is tested and verified against <strong>HowlFrame 0.1.0</strong> (HFBC Bytecode Format v1) at commit <code>7cdc5116d426cc05c505d6457dc24aeb4fcc2046</code>.
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Implementation Target</th>
+                                    <th>HowlFrame Primitive</th>
+                                    <th>Verification Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Notes CRUD</strong></td>
+                                    <td>Backend API &amp; Frontend</td>
+                                    <td><code>store_put</code>, <code>store_get</code>, <code>store_delete</code></td>
+                                    <td><span class="chip chip-pass">PASS (100%)</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data Persistence</strong></td>
+                                    <td>Local Disk (<code>file://data/notes.json</code>)</td>
+                                    <td><code>store_open</code></td>
+                                    <td><span class="chip chip-allow">DURABLE</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Capability Boundary</strong></td>
+                                    <td>Bytecode VM Execution</td>
+                                    <td><code>-allow-caps network,database,filesystem</code></td>
+                                    <td><span class="chip chip-deny">FAIL CLOSED</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Browser Interface</strong></td>
+                                    <td>Static Web UI</td>
+                                    <td><code>(web_app ...)</code> &rarr; JS Emit</td>
+                                    <td><span class="chip chip-cyan">VANILLA JS</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 02 Architecture -->
+            <section id="architecture" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 02</span> Architecture &amp; Data Model</h2>
+                    <span class="subsystem-tag">HN-MOD-SCHEMA</span>
+                </div>
+                <div class="tech-body">
+                    <p>Notes are persisted as structured records with millisecond Unix timestamps:</p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span class="code-title">[JSON // RECORD_SCHEMA]</span>
+                            <button class="btn-copy" type="button">[COPY]</button>
+                        </div>
+                        <pre><code>{
+  "id": "1",
+  "content": "Verify capability boundaries across Howl ecosystem",
+  "created_at": "1787190354",
+  "updated_at": "1787190354"
+}</code></pre>
+                    </div>
+
+                    <h3>Store State Layout (<code>file://data/notes.json</code>)</h3>
+                    <ul>
+                        <li><code>_seq</code>: <code>{"val": &lt;integer&gt;}</code> &mdash; Auto-incrementing sequence counter.</li>
+                        <li><code>_all_ids</code>: <code>{"ids": ["1", "2", ...]}</code> &mdash; Active note ID registry for full list scans.</li>
+                        <li><code>"&lt;id&gt;"</code>: Structured note payload object.</li>
+                    </ul>
+
+                    <h3>HTTP API Contract</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>Path</th>
+                                    <th>Description</th>
+                                    <th>Payload</th>
+                                    <th>Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>GET</code></td>
+                                    <td><code>/api/health</code></td>
+                                    <td>Health &amp; storage status</td>
+                                    <td>None</td>
+                                    <td><code>200 {"status":"ok","app":"howlnotes"}</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>GET</code></td>
+                                    <td><code>/api/notes</code></td>
+                                    <td>List all notes</td>
+                                    <td>None</td>
+                                    <td><code>200 {"notes":[...]}</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>POST</code></td>
+                                    <td><code>/api/notes</code></td>
+                                    <td>Create new note</td>
+                                    <td><code>{"content":"..."}</code></td>
+                                    <td><code>201 {"id":"...","content":"..."}</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>PUT</code></td>
+                                    <td><code>/api/notes</code></td>
+                                    <td>Update note</td>
+                                    <td><code>{"id":"...","content":"..."}</code></td>
+                                    <td><code>200 {...}</code> or <code>404</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>DELETE</code></td>
+                                    <td><code>/api/notes</code></td>
+                                    <td>Delete note</td>
+                                    <td><code>{"id":"..."}</code></td>
+                                    <td><code>200 {"status":"ok"}</code> or <code>404</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 03 Pipeline -->
+            <section id="pipeline" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 03</span> Compilation &amp; Execution Pipeline</h2>
+                    <span class="subsystem-tag">HN-MOD-PIPELINE</span>
+                </div>
+                <div class="tech-body">
+                    <ol>
+                        <li>
+                            <strong>Frontend Compilation:</strong> Source in <code>app/frontend.howl</code> uses the <code>(web_app ...)</code> DSL and compiles via HowlFrame's JavaScript backend into <code>static/app.js</code> with DOM event bindings.
+                        </li>
+                        <li>
+                            <strong>Backend Compilation:</strong> Source in <code>app/backend.howl</code> uses the <code>(http_server ...)</code> DSL and compiles into standalone bytecode <code>build/backend.hfbc</code> via <code>howlframe -compile-bc</code>.
+                        </li>
+                        <li>
+                            <strong>Runtime Execution:</strong> The backend is executed via <code>howlframe -run-bc -allow-caps network,database,filesystem build/backend.hfbc</code>. The VM verifies capabilities before allowing socket binding or file writes.
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- 04 Security -->
+            <section id="security" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 04</span> Capability Boundaries &amp; Validation</h2>
+                    <span class="subsystem-tag">HN-MOD-SECURITY</span>
+                </div>
+                <div class="tech-body">
+                    <p>
+                        In accordance with the Howl principle <strong>"Intent is not authority"</strong>, all client input is treated as untrusted and validated before storage mutations occur:
+                    </p>
+                    <ul>
+                        <li><strong>Malformed JSON:</strong> Caught via <code>try_let</code> returning <code>400 {"error":"invalid_json"}</code>.</li>
+                        <li><strong>Empty Content:</strong> Validated via length check returning <code>400 {"error":"content_required"}</code>.</li>
+                        <li><strong>Oversized Content:</strong> Enforces &le; 10,000 character maximum returning <code>400 {"error":"content_too_long"}</code>.</li>
+                        <li><strong>Capability Enforcement:</strong> If <code>database</code> or <code>filesystem</code> capability is omitted at launch, store initialization fails closed immediately.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 05 Findings -->
+            <section id="dogfood" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 05</span> Dogfooding Insights &amp; Language Evolution</h2>
+                    <span class="subsystem-tag">HN-MOD-DOGFOOD</span>
+                </div>
+                <div class="tech-body">
+                    <p>
+                        Building HowlNotes directly uncovered concrete opportunities to improve HowlFrame:
+                    </p>
+                    <div class="grid-2col">
+                        <div>
+                            <h3>String Interpolation Ergonomics</h3>
+                            <p>Deeply nested <code>(str "..." (str "..." ...))</code> expressions are verbose in Lisp syntax. Recommended adding template strings to HowlFrame's parser.</p>
+                        </div>
+                        <div>
+                            <h3>Native JSON Deserialization</h3>
+                            <p>Parsing nested JSON payloads inside bytecode handlers requires explicit dictionary walks. Recommended adding typed struct schema bridging.</p>
+                        </div>
+                        <div>
+                            <h3>Array Iteration Primitives</h3>
+                            <p>Iterating over store keys required manual index counter loops. Highlighted the value of standard <code>map</code>/<code>filter</code> collection primitives.</p>
+                        </div>
+                        <div>
+                            <h3>Single-Process Persistence</h3>
+                            <p>HowlFrame's file-backed store provides atomic local persistence, ideal for single-node tools and edge applications.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 06 Quick Start -->
+            <section id="quickstart" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 06</span> Quick Start &amp; Local Execution</h2>
+                    <span class="subsystem-tag">HN-MOD-RUN</span>
+                </div>
+                <div class="tech-body">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span class="code-title">[BASH // BUILD_AND_TEST]</span>
+                            <button class="btn-copy" type="button">[COPY]</button>
+                        </div>
+                        <pre><code># 1. Clone repository
+git clone https://github.com/howlcipher/howlnotes.git
+cd howlnotes
+
+# 2. Bootstrap HowlFrame compiler toolchain
+./scripts/bootstrap.sh
+
+# 3. Build frontend and backend targets
+./scripts/build.sh
+
+# 4. Run automated test suite
+./scripts/test.sh
+
+# 5. Start server on localhost:8088
+./scripts/run.sh</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 07 Reports Index -->
+            <section id="reports" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 07</span> Technical Reports Index</h2>
+                    <span class="subsystem-tag">HN-MOD-DOCS</span>
+                </div>
+                <div class="tech-body">
+                    <ul>
+                        <li><a href="https://github.com/howlcipher/howlnotes/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noreferrer">Architecture Specification Document</a> &mdash; Detailed breakdown of bytecode runtime, store mechanics, and API routing.</li>
+                        <li><a href="https://github.com/howlcipher/howlnotes/blob/main/docs/DOGFOOD.md" target="_blank" rel="noreferrer">Dogfooding Journal</a> &mdash; Complete catalog of discovered friction points, workarounds, and classification categories.</li>
+                        <li><a href="https://github.com/howlcipher/howlnotes/blob/main/docs/V1_REPORT.md" target="_blank" rel="noreferrer">v1 Final Evaluation Report</a> &mdash; Comprehensive answers to the 9 core dogfooding questions and future HFIR roadmap.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Site Footer -->
+        <footer class="site-footer">
+            <div class="footer-telemetry">
+                <div class="status-indicator">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span>SYS_STATUS: ACTIVE // HOWLNOTES-KNOWLEDGE</span>
+                </div>
+                <div>AUTH // HOWL ECOSYSTEM 2026</div>
+            </div>
+            <div class="footer-links">
+                <nav class="footer-nav" aria-label="Ecosystem Links">
+                    <a href="https://howlcipher.github.io/howlframe/">HowlFrame</a>
+                    <a href="https://howlcipher.github.io/howlplane/">HowlPlane</a>
+                    <a href="https://howlcipher.github.io/howlnotes/">HowlNotes</a>
+                    <a href="https://howlcipher.github.io/changeops/">ChangeOps</a>
+                    <a href="https://howlcipher.github.io/howlboard/">HowlBoard</a>
+                </nav>
+                <a href="#main-content">[ BACK TO TOP ]</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 # HowlNotes
 
+> **Website & Documentation:** https://howlcipher.github.io/howlnotes/
+
 > HowlNotes is a small notes application built to determine how much ordinary application development can currently be expressed through HowlFrame and to expose concrete gaps in the language, runtime, HFIR, capability model, and developer experience.
 
 HowlNotes is a genuinely complete, usable notes web application built as an **external dogfood consumer** of [HowlFrame](https://github.com/howlcipher/howlframe).
