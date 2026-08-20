@@ -5,3 +5,4 @@ data/
 *.hfbc
 *.bc.bin
 *.test
+.task_runs/

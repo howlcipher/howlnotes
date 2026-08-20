@@ -232,7 +232,7 @@ func TestNotesEndToEndAndPersistence(t *testing.T) {
 		}
 		var data map[string]any
 		json.NewDecoder(resp.Body).Decode(&data)
-		if data["app"] != "howlnotes" || data["status"] != "ok" {
+		if data["app"] != "howlnotes" || data["status"] != "ok" || data["version"] != "0.1.0" {
 			t.Fatalf("unexpected health payload: %#v", data)
 		}
 	})

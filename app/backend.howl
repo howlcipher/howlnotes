@@ -55,7 +55,7 @@
       (res_header "Access-Control-Allow-Headers" "Content-Type")
       (if (= (req_method req) "OPTIONS")
         (res_json 200 (dict ("status" "ok")))
-        (res_json 200 (dict ("status" "ok") ("app" "howlnotes") ("persistence" "file://data/notes.json")))
+        (res_json 200 (dict ("status" "ok") ("app" "howlnotes") ("persistence" "file://data/notes.json") ("version" "0.1.0")))
       )
     )
   ))
