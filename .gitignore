@@ -1,0 +1,7 @@
+bin/
+.deps/
+build/
+data/
+*.hfbc
+*.bc.bin
+*.test
