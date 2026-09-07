@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="HowlNotes is a complete full-stack notes web application built as an external dogfood consumer of HowlFrame, verifying browser compilation and native persistent record stores.">
+    <meta name="description" content="HowlNotes is a full-stack notes application and dogfood consumer of HowlFrame, verifying browser compilation, VM bytecode, and native persistent record stores.">
     <link rel="canonical" href="https://howlcipher.github.io/howlnotes/">
 
     <!-- Open Graph Metadata -->
@@ -23,6 +23,29 @@
     <meta name="twitter:description" content="A complete full-stack notes web application proving HowlFrame capability boundaries, browser compilation, and native state persistence.">
     <meta name="twitter:image" content="https://howlcipher.github.io/howlnotes/social-preview.png">
     <meta name="twitter:image:alt" content="HowlNotes architecture and knowledge card preview">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "HowlNotes",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "POSIX, Linux, macOS",
+      "description": "Full-stack notes application and dogfood consumer of HowlFrame, verifying browser compilation, VM bytecode, and native persistent record stores.",
+      "url": "https://howlcipher.github.io/howlnotes/",
+      "author": {
+        "@type": "Person",
+        "name": "William Elias",
+        "url": "https://howlcipher.github.io/william_elias/"
+      },
+      "isPartOf": {
+        "@type": "SoftwareApplication",
+        "name": "Howl Autonomous Software Engineering Ecosystem",
+        "url": "https://howlcipher.github.io/howl/"
+      }
+    }
+    </script>
 
     <title>HowlNotes | Knowledge Notebook &amp; HowlFrame Dogfood Consumer</title>
     <link rel="stylesheet" href="style.css">
@@ -66,20 +89,36 @@
                 <div class="node-card-desc">Engineering control plane with deterministic routing, adversarial falsification, and human gates.</div>
             </a>
 
-            <a href="https://howlcipher.github.io/howlnotes/" class="drawer-node-card active-hub">
-                <div class="node-card-top">
-                    <span class="node-card-name">HOWLNOTES</span>
-                    <span class="node-card-role" style="color: var(--color-cyan);">[KNOWLEDGE NOTEBOOK]</span>
-                </div>
-                <div class="node-card-desc">Engineering knowledge notebook &amp; full-stack dogfood consumer proving native persistent storage.</div>
-            </a>
-
             <a href="https://howlcipher.github.io/howlchangeops/" class="drawer-node-card">
                 <div class="node-card-top">
                     <span class="node-card-name">HOWLCHANGEOPS</span>
                     <span class="node-card-role" style="color: var(--color-red);">[AUTHORITY GATE]</span>
                 </div>
                 <div class="node-card-desc">Governed release controller enforcing cryptographic human approvals and bounded Git mutations.</div>
+            </a>
+
+            <a href="https://howlcipher.github.io/howlrelay/" class="drawer-node-card">
+                <div class="node-card-top">
+                    <span class="node-card-name">HOWLRELAY</span>
+                    <span class="node-card-role" style="color: var(--color-green);">[AUDIT RELAY]</span>
+                </div>
+                <div class="node-card-desc">Append-only signed audit ledger guaranteeing verifiable execution trails.</div>
+            </a>
+
+            <a href="https://howlcipher.github.io/howlwriter/" class="drawer-node-card">
+                <div class="node-card-top">
+                    <span class="node-card-name">HOWLWRITER</span>
+                    <span class="node-card-role" style="color: var(--color-magenta);">[WRITING CONTROL]</span>
+                </div>
+                <div class="node-card-desc">Writing control system for voice preservation, deterministic style linting, humanization, and review.</div>
+            </a>
+
+            <a href="https://howlcipher.github.io/howlcreate/" class="drawer-node-card">
+                <div class="node-card-top">
+                    <span class="node-card-name">HOWLCREATE</span>
+                    <span class="node-card-role" style="color: var(--color-cyan);">[PROJECT SCAFFOLD]</span>
+                </div>
+                <div class="node-card-desc">Interactive CLI scaffolding governed templates for deterministic HowlFrame applications.</div>
             </a>
 
             <a href="https://howlcipher.github.io/howlboard/" class="drawer-node-card">
@@ -90,16 +129,16 @@
                 <div class="node-card-desc">Observation console and full-stack deterministic task state machine application.</div>
             </a>
 
-            <a href="https://howlcipher.github.io/howlwriter/" class="drawer-node-card">
+            <a href="https://howlcipher.github.io/howlnotes/" class="drawer-node-card active-hub">
                 <div class="node-card-top">
-                    <span class="node-card-name">HOWLWRITER</span>
-                    <span class="node-card-role" style="color: var(--color-magenta);">[WRITING CONTROL]</span>
+                    <span class="node-card-name">HOWLNOTES</span>
+                    <span class="node-card-role" style="color: var(--color-cyan);">[KNOWLEDGE NOTEBOOK]</span>
                 </div>
-                <div class="node-card-desc">Writing control system for voice preservation, deterministic style linting, humanization, and review.</div>
+                <div class="node-card-desc">Engineering knowledge notebook &amp; full-stack dogfood consumer proving native persistent storage.</div>
             </a>
         </div>
         <div class="drawer-footer">
-            <span>● 6 PRODUCTION NODES</span>
+            <span>● 9 PRODUCTION NODES</span>
             <span>AUTH // HOWL 2026</span>
         </div>
     </aside>
@@ -135,6 +174,7 @@
                 <a href="#dogfood">05_Findings</a>
                 <a href="#quickstart">06_QuickStart</a>
                 <a href="#reports">07_ReportsIndex</a>
+                <a href="#technical-qa">08_TechnicalQA</a>
             </nav>
         </header>
 
@@ -151,7 +191,7 @@
                         <p class="hero-kicker">// engineering field notebook / howlframe dogfood consumer</p>
                         <h1 id="main-title" class="hero-title">HowlNotes <span class="jp-sub">ハウルノーツ // 2026</span></h1>
                         <p class="hero-lead">
-                            HowlNotes is a genuinely complete notes web application built as an external dogfood consumer of HowlFrame. It determines how much ordinary application development can be expressed through HowlFrame DSLs and verifies persistent record stores under capability boundaries.
+                            HowlNotes is a genuinely complete notes web application built as an external dogfood consumer of HowlFrame, engineered by <a href="https://howlcipher.github.io/william_elias/" style="color: var(--color-cyan); text-decoration: underline;">William Elias</a>. It determines how much ordinary application development can be expressed through HowlFrame DSLs and verifies persistent record stores under capability boundaries.
                         </p>
                     </div>
 
@@ -470,6 +510,34 @@ cd howlnotes
                         <li><a href="https://github.com/howlcipher/howlnotes/blob/main/docs/V1_REPORT.md" target="_blank" rel="noreferrer">v1 Final Evaluation Report</a> &mdash; Comprehensive answers to the 9 core dogfooding questions and future HFIR roadmap.</li>
                     </ul>
                 </div>
+            <!-- 08 Technical Q&A -->
+            <section id="technical-qa" class="tech-panel">
+                <div class="tech-header">
+                    <h2><span class="sec-id">SECTION // 08</span> Technical Q&amp;A: Full-Stack Dogfooding &amp; Storage Persistence</h2>
+                    <span class="subsystem-tag">HN-MOD-QA</span>
+                </div>
+                <div class="tech-body">
+                    <div class="qa-grid">
+                        <div class="qa-item">
+                            <h3>How does HowlNotes prove HowlFrame's full-stack application readiness?</h3>
+                            <p>
+                                HowlNotes serves as the canonical real-world dogfood application for the <a href="https://howlcipher.github.io/howlframe/">HowlFrame</a> toolchain. Rather than trivial benchmark examples, it runs a complete notes system with dual targets: the frontend compiles to browser JavaScript via <code>web_app</code> DSL while the backend executes entirely on the standalone sandboxed bytecode VM.
+                            </p>
+                        </div>
+                        <div class="qa-item">
+                            <h3>How is data persisted without external database dependencies?</h3>
+                            <p>
+                                In systems engineered by <a href="https://howlcipher.github.io/william_elias/">William Elias</a>, operational simplicity and sandboxed execution are core principles. HowlNotes uses HowlFrame's native record store with atomic JSON disk writes and write-ahead validation, ensuring notes persist across VM restarts while operating under strict capability boundaries.
+                            </p>
+                        </div>
+                        <div class="qa-item">
+                            <h3>Where does HowlNotes fit in the Howl autonomous engineering ecosystem?</h3>
+                            <p>
+                                As part of the <a href="https://howlcipher.github.io/howl/">Howl ecosystem</a>, HowlNotes serves as the shared engineering field notebook, collaborating with <a href="https://howlcipher.github.io/howlboard/">HowlBoard</a> for state evaluation, <a href="https://howlcipher.github.io/howlplane/">HowlPlane</a> for control orchestration, and <a href="https://howlcipher.github.io/howlrelay/">HowlRelay</a> for immutable audit logging.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
 
@@ -480,17 +548,20 @@ cd howlnotes
                     <span class="status-dot" aria-hidden="true"></span>
                     <span>SYS_STATUS: ACTIVE // HOWLNOTES-KNOWLEDGE</span>
                 </div>
-                <div>AUTH // HOWL ECOSYSTEM 2026</div>
+                <div>ENGINEERED BY <a href="https://howlcipher.github.io/william_elias/" style="color: var(--color-cyan); text-decoration: underline;">WILLIAM ELIAS</a> // HOWL ECOSYSTEM 2026</div>
             </div>
             <div class="footer-links">
                 <nav class="footer-nav" aria-label="Ecosystem Links">
                     <a href="https://howlcipher.github.io/howl/">Howl Hub</a>
                     <a href="https://howlcipher.github.io/howlframe/">HowlFrame</a>
                     <a href="https://howlcipher.github.io/howlplane/">HowlPlane</a>
-                    <a href="https://howlcipher.github.io/howlnotes/">HowlNotes</a>
                     <a href="https://howlcipher.github.io/howlchangeops/">HowlChangeOps</a>
-                    <a href="https://howlcipher.github.io/howlboard/">HowlBoard</a>
+                    <a href="https://howlcipher.github.io/howlrelay/">HowlRelay</a>
                     <a href="https://howlcipher.github.io/howlwriter/">HowlWriter</a>
+                    <a href="https://howlcipher.github.io/howlcreate/">HowlCreate</a>
+                    <a href="https://howlcipher.github.io/howlboard/">HowlBoard</a>
+                    <a href="https://howlcipher.github.io/howlnotes/">HowlNotes</a>
+                    <a href="https://howlcipher.github.io/william_elias/">Portfolio</a>
                 </nav>
                 <a href="#main-content">[ BACK TO TOP ]</a>
             </div>
