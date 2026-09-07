@@ -28,3 +28,12 @@ jobs:
 
       - name: Run Test Suite
         run: ./scripts/test.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify SEO Metadata & Artifacts
+        run: python3 scripts/test_seo.py
+
