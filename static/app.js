@@ -408,25 +408,28 @@ if ((err_msg !== "")) {
 }
 }
 
+;(async () => {
 document.querySelector("#create-btn").addEventListener("click", async (e) => {
 //line frontend.howl:236
 (await create_note())
-})
+});
 document.querySelector("#search-input").addEventListener("input", async (e) => {
 //line frontend.howl:240
 (await load_notes())
-})
+});
 document.querySelector("#refresh-btn").addEventListener("click", async (e) => {
 //line frontend.howl:244
 (await load_notes())
-})
+});
 document.querySelector("#save-edit-btn").addEventListener("click", async (e) => {
 //line frontend.howl:248
 (await save_edit())
-})
+});
 document.querySelector("#cancel-edit-btn").addEventListener("click", async (e) => {
 //line frontend.howl:252
 (await cancel_edit())
-})
+});
 //line frontend.howl:255
 (await load_notes())
+
+})();
