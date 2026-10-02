@@ -1,3 +1,159 @@
+function howlFrameGrantHas(name) {
+  var raw = process.env.HOWLFRAME_ALLOW_CAPS || "";
+  var parts = raw.split(",");
+  for (var i = 0; i < parts.length; i++) {
+    if (parts[i].trim() === name) return true;
+  }
+  return false;
+}
+
+function howlFrameFetch(url, method, body) {
+  if (!howlFrameGrantHas("network")) {
+    throw new Error("CAPABILITY_DENIED: capability denied: network");
+  }
+  var init = { method: method };
+  if (arguments.length >= 3) {
+    init.body = body;
+  }
+  return fetch(url, init).then(function (r) { return r.text(); });
+}
+
+function howlFrameToInt(v) {
+  if (typeof v === "number") {
+    if (!Number.isFinite(v)) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + v + " to int");
+    }
+    var t = Math.trunc(v);
+    if (t < Number.MIN_SAFE_INTEGER || t > Number.MAX_SAFE_INTEGER) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + v + " to int");
+    }
+    return t;
+  }
+  if (typeof v === "string") {
+    var s = v.trim();
+    if (!/^[+-]?\d+$/.test(s)) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + JSON.stringify(v) + " to int");
+    }
+    var n = Number(s);
+    if (!Number.isInteger(n) || n < Number.MIN_SAFE_INTEGER || n > Number.MAX_SAFE_INTEGER) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + JSON.stringify(v) + " to int");
+    }
+    return n;
+  }
+  throw new Error("CONVERSION_ERROR: cannot convert " + (typeof v) + " to int");
+}
+function howlFrameSafeInt(v) {
+  if (!Number.isSafeInteger(v)) {
+    throw new Error("RUNTIME_ERROR: integer result is outside the exact JavaScript integer range");
+  }
+  return v;
+}
+function howlFrameArith(op, a, b) {
+  var v = op === "+" ? a + b : op === "-" ? a - b : a * b;
+  if (typeof v === "number" && !Number.isSafeInteger(v) && Number.isInteger(a) && Number.isInteger(b)) {
+    throw new Error("RUNTIME_ERROR: integer result is outside the exact JavaScript integer range");
+  }
+  return v;
+}
+function howlFrameParseJSON(text) {
+  // JavaScript numbers cannot hold every int64. When the engine exposes the
+  // token source, reject only integer tokens that would lose precision. Without
+  // it, fail closed on any integer-valued number outside the exact range:
+  // an integer beyond 2^53 always decodes to such a value.
+  return JSON.parse(text, function (key, value, context) {
+    if (typeof value === "number" && !Number.isSafeInteger(value)) {
+      var unsafe = context && typeof context.source === "string" ? /^-?\d+$/.test(context.source) : Number.isInteger(value);
+      if (unsafe) {
+        throw new Error("CONVERSION_ERROR: integer is outside the exact JavaScript integer range");
+      }
+    }
+    return value;
+  });
+}
+function howlFrameToFloat(v) {
+  if (typeof v === "number") {
+    if (!Number.isFinite(v)) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + v + " to float");
+    }
+    return v;
+  }
+  if (typeof v === "string") {
+    var s = v.trim();
+    if (s === "") {
+      throw new Error("CONVERSION_ERROR: cannot convert \"\" to float");
+    }
+    var n = Number(s);
+    if (Number.isNaN(n) || !Number.isFinite(n)) {
+      throw new Error("CONVERSION_ERROR: cannot convert " + JSON.stringify(v) + " to float");
+    }
+    return n;
+  }
+  throw new Error("CONVERSION_ERROR: cannot convert " + (typeof v) + " to float");
+}
+function howlFrameDiv(a, b) {
+  var af = howlFrameToFloat(a);
+  var bf = howlFrameToFloat(b);
+  if (bf === 0) {
+    throw new Error("RUNTIME_ERROR: division by zero");
+  }
+  var res = af / bf;
+  if (!Number.isFinite(res)) {
+    throw new Error("RUNTIME_ERROR: division produced an invalid floating-point result");
+  }
+  return res;
+}
+function howlFrameValueKind(v) {
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "list";
+  return typeof v;
+}
+function howlFrameIsDict(v) {
+  return v !== null && typeof v === "object" && !Array.isArray(v);
+}
+function howlFrameMapGet(dict, key) {
+  if (!howlFrameIsDict(dict)) {
+    throw new Error("TYPE_ERROR: map_get expected dict, got " + howlFrameValueKind(dict));
+  }
+  return dict[key] ?? "";
+}
+function howlFrameMapSet(dict, key, val) {
+  if (!howlFrameIsDict(dict)) {
+    throw new Error("TYPE_ERROR: map_set expected dict, got " + howlFrameValueKind(dict));
+  }
+  dict[key] = val;
+}
+function howlFrameMapDelete(dict, key) {
+  if (!howlFrameIsDict(dict)) {
+    throw new Error("TYPE_ERROR: map_delete expected dict, got " + howlFrameValueKind(dict));
+  }
+  delete dict[key];
+}
+function howlFrameAppend(list, item) {
+  if (!Array.isArray(list)) {
+    throw new Error("TYPE_ERROR: append expected list, got " + howlFrameValueKind(list));
+  }
+  list.push(item);
+  return list;
+}
+function howlFrameListIndex(idx) {
+  if (typeof idx === "number" && Number.isInteger(idx)) return idx;
+  if (typeof idx === "string" && /^[+-]?\d+$/.test(idx.trim())) return parseInt(idx.trim(), 10);
+  throw new Error("TYPE_ERROR: list_get index must be a number, got " + howlFrameValueKind(idx));
+}
+function howlFrameListGet(list, idx) {
+  if (!Array.isArray(list)) {
+    throw new Error("TYPE_ERROR: list_get expected list, got " + howlFrameValueKind(list));
+  }
+  var i = howlFrameListIndex(idx);
+  if (i < 0 || i >= list.length) return "";
+  return list[i] ?? "";
+}
+function howlFrameListLen(list) {
+  if (!Array.isArray(list)) {
+    throw new Error("TYPE_ERROR: list_len expected list, got " + howlFrameValueKind(list));
+  }
+  return list.length;
+}
 async function set_status(message, is_error) {
 //line frontend.howl:4
 {
@@ -31,10 +187,10 @@ banner.setAttribute("style", "display: block;");
 async function render_note(note) {
 //line frontend.howl:26
 {
-let id = String((note["id"] ?? ""));
-let content = String((note["content"] ?? ""));
-let created_at = String((note["created_at"] ?? ""));
-let updated_at = String((note["updated_at"] ?? ""));
+let id = String(howlFrameMapGet(note, "id"));
+let content = String(howlFrameMapGet(note, "content"));
+let created_at = String(howlFrameMapGet(note, "created_at"));
+let updated_at = String(howlFrameMapGet(note, "updated_at"));
 let html = "";
 //line frontend.howl:31
 {
@@ -68,7 +224,7 @@ async function load_notes() {
 	let resp;
 	let err = null;
 	try {
-		resp = (await fetch("/api/notes", { method: "GET" }).then(r => r.text()));
+		resp = (await howlFrameFetch("/api/notes", "GET"));
 	} catch (e) {
 		err = e;
 	}
@@ -81,7 +237,7 @@ async function load_notes() {
 	let json_resp;
 	let parse_err = null;
 	try {
-		json_resp = JSON.parse(resp);
+		json_resp = howlFrameParseJSON(resp);
 	} catch (e) {
 		parse_err = e;
 	}
@@ -91,7 +247,7 @@ async function load_notes() {
 	} else {
 		//line frontend.howl:59
 {
-let notes = (json_resp["notes"] ?? "");
+let notes = howlFrameMapGet(json_resp, "notes");
 let filter_text = document.querySelector("#search-input").value;
 let cards_html = "";
 let count = 0;
@@ -101,8 +257,8 @@ let count = 0;
 for (let note of notes) {
 //line frontend.howl:65
 {
-let content = String((note["content"] ?? ""));
-let id = String((note["id"] ?? ""));
+let content = String(howlFrameMapGet(note, "content"));
+let id = String(howlFrameMapGet(note, "id"));
 let match = true;
 //line frontend.howl:68
 {
@@ -132,7 +288,7 @@ let card = (await render_note(note));
 //line frontend.howl:79
 cards_html = ([cards_html, card]).join("");
 //line frontend.howl:80
-count = (count + 1);
+count = howlFrameSafeInt(count + 1);
 }
 }
 } else {
@@ -173,7 +329,7 @@ if ((content === "")) {
 (await set_status("Note content cannot be empty", "true"))
 } else {
 //line frontend.howl:111
-if ((((content).split("")).length > 10000)) {
+if ((howlFrameListLen((content).split("")) > 10000)) {
 //line frontend.howl:112
 (await set_status("Note content exceeds 10,000 characters limit", "true"))
 } else {
@@ -189,7 +345,7 @@ let req_body = (["{\"content\":\"", content, "\"}"]).join("");
 	let resp;
 	let err = null;
 	try {
-		resp = (await fetch("/api/notes", { method: "POST", body: req_body }).then(r => r.text()));
+		resp = (await howlFrameFetch("/api/notes", "POST", req_body));
 	} catch (e) {
 		err = e;
 	}
@@ -202,7 +358,7 @@ let req_body = (["{\"content\":\"", content, "\"}"]).join("");
 	let json_resp;
 	let parse_err = null;
 	try {
-		json_resp = JSON.parse(resp);
+		json_resp = howlFrameParseJSON(resp);
 	} catch (e) {
 		parse_err = e;
 	}
@@ -212,7 +368,7 @@ let req_body = (["{\"content\":\"", content, "\"}"]).join("");
 	} else {
 		//line frontend.howl:124
 {
-let err_msg = (json_resp["error"] ?? "");
+let err_msg = howlFrameMapGet(json_resp, "error");
 //line frontend.howl:125
 if ((err_msg !== "")) {
 //line frontend.howl:126
@@ -281,7 +437,7 @@ if ((content === "")) {
 (await set_status("Note content cannot be empty", "true"))
 } else {
 //line frontend.howl:174
-if ((((content).split("")).length > 10000)) {
+if ((howlFrameListLen((content).split("")) > 10000)) {
 //line frontend.howl:175
 (await set_status("Note content exceeds 10,000 characters limit", "true"))
 } else {
@@ -297,7 +453,7 @@ let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join(""
 	let resp;
 	let err = null;
 	try {
-		resp = (await fetch("/api/notes", { method: "PUT", body: req_body }).then(r => r.text()));
+		resp = (await howlFrameFetch("/api/notes", "PUT", req_body));
 	} catch (e) {
 		err = e;
 	}
@@ -310,7 +466,7 @@ let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join(""
 	let json_resp;
 	let parse_err = null;
 	try {
-		json_resp = JSON.parse(resp);
+		json_resp = howlFrameParseJSON(resp);
 	} catch (e) {
 		parse_err = e;
 	}
@@ -320,7 +476,7 @@ let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join(""
 	} else {
 		//line frontend.howl:187
 {
-let err_msg = (json_resp["error"] ?? "");
+let err_msg = howlFrameMapGet(json_resp, "error");
 //line frontend.howl:188
 if ((err_msg !== "")) {
 //line frontend.howl:189
@@ -362,7 +518,7 @@ let req_body = (["{\"id\":\"", id, "\"}"]).join("");
 	let resp;
 	let err = null;
 	try {
-		resp = (await fetch("/api/notes", { method: "DELETE", body: req_body }).then(r => r.text()));
+		resp = (await howlFrameFetch("/api/notes", "DELETE", req_body));
 	} catch (e) {
 		err = e;
 	}
@@ -375,7 +531,7 @@ let req_body = (["{\"id\":\"", id, "\"}"]).join("");
 	let json_resp;
 	let parse_err = null;
 	try {
-		json_resp = JSON.parse(resp);
+		json_resp = howlFrameParseJSON(resp);
 	} catch (e) {
 		parse_err = e;
 	}
@@ -385,7 +541,7 @@ let req_body = (["{\"id\":\"", id, "\"}"]).join("");
 	} else {
 		//line frontend.howl:220
 {
-let err_msg = (json_resp["error"] ?? "");
+let err_msg = howlFrameMapGet(json_resp, "error");
 //line frontend.howl:221
 if ((err_msg !== "")) {
 //line frontend.howl:222
@@ -432,4 +588,7 @@ document.querySelector("#cancel-edit-btn").addEventListener("click", async (e) =
 //line frontend.howl:255
 (await load_notes())
 
-})();
+})().catch((err) => {
+  console.error(err && err.message ? err.message : err);
+  process.exit(1);
+});
