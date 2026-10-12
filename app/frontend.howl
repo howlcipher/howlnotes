@@ -23,18 +23,18 @@
 
   (defun render_note (note)
     (type_hint note "dict")
-    (let (id (to_string (map_get note "id")))
+    (let (id (attr_escape (to_string (map_get note "id"))))
       (let (content (to_string (map_get note "content")))
         (let (created_at (to_string (map_get note "created_at")))
           (let (updated_at (to_string (map_get note "updated_at")))
             (let (html "")
               (do
                 (set html (str_join (list "<div class=\"note-card\" id=\"note-" id "\">") ""))
-                (set html (str_join (list html "<div class=\"note-header\"><span class=\"note-badge\">Note #" id "</span><span class=\"note-timestamp\">" created_at "</span></div>") ""))
-                (set html (str_join (list html "<div class=\"note-body\" id=\"note-content-" id "\">" content "</div>") ""))
+                (set html (str_join (list html "<div class=\"note-header\"><span class=\"note-badge\">Note #" id "</span><span class=\"note-timestamp\">" (html_escape created_at) "</span></div>") ""))
+                (set html (str_join (list html "<div class=\"note-body\" id=\"note-content-" id "\">" (html_escape content) "</div>") ""))
                 (set html (str_join (list html "<div class=\"note-actions\">") ""))
-                (set html (str_join (list html "<button class=\"btn btn-secondary\" onclick=\"start_edit('" id "','" content "')\">Edit</button>") ""))
-                (set html (str_join (list html "<button class=\"btn btn-danger\" onclick=\"delete_note('" id "')\">Delete</button>") ""))
+                (set html (str_join (list html "<button class=\"btn btn-secondary\" data-note-id=\"" id "\" onclick=\"start_edit(this.dataset.noteId)\">Edit</button>") ""))
+                (set html (str_join (list html "<button class=\"btn btn-danger\" data-note-id=\"" id "\" onclick=\"delete_note(this.dataset.noteId)\">Delete</button>") ""))
                 (set html (str_join (list html "</div></div>") ""))
                 (return html)
               )
@@ -67,7 +67,7 @@
                           (let (match true)
                             (do
                               (if (!= filter_text "")
-                                (if (= (regex_match filter_text content) false)
+                                (if (= (str_contains content filter_text) false)
                                   (set match false)
                                   (do)
                                 )
@@ -112,7 +112,7 @@
               (call set_status "Note content exceeds 10,000 characters limit" "true")
               (do
                 (call set_status "Saving note..." "false")
-                (let (req_body (str_join (list "{\"content\":\"" content "\"}") ""))
+                (let (req_body (encode_json (dict ("content" content))))
                   (try_let (resp (fetch "/api/notes" "POST" req_body))
                     (catch err
                       (call set_status "Failed to save note" "true")
@@ -125,7 +125,7 @@
                         (if (!= err_msg "")
                           (call set_status err_msg "true")
                           (do
-                            (set_attr input "value" "")
+                            (set input.value "")
                             (call set_status "Note created successfully!" "false")
                             (call load_notes)
                           )
@@ -142,14 +142,17 @@
     )
   )
 
-  (defun start_edit (id content)
+  (defun start_edit (id)
     (let (modal (dom_query "#edit-modal"))
       (let (id_input (dom_query "#edit-note-id"))
         (let (content_input (dom_query "#edit-note-content"))
           (do
             (set_attr id_input "value" id)
-            (set_attr content_input "value" content)
+            (let (content_node (call document.getElementById (str_join (list "note-content-" id) "")))
+              (set content_input.value content_node.textContent)
+            )
             (set_attr modal "style" "display: flex;")
+            (call content_input.focus)
           )
         )
       )
@@ -160,6 +163,7 @@
     (let (modal (dom_query "#edit-modal"))
       (do
         (set_attr modal "style" "display: none;")
+        (let (input (dom_query "#new-note-content")) (call input.focus))
         (call set_status "" "false")
       )
     )
@@ -175,7 +179,7 @@
               (call set_status "Note content exceeds 10,000 characters limit" "true")
               (do
                 (call set_status "Updating note..." "false")
-                (let (req_body (str_join (list "{\"id\":\"" id "\",\"content\":\"" content "\"}") ""))
+                (let (req_body (encode_json (dict ("id" id) ("content" content))))
                   (try_let (resp (fetch "/api/notes" "PUT" req_body))
                     (catch err
                       (call set_status "Failed to update note" "true")
@@ -208,7 +212,7 @@
   (defun delete_note (id)
     (do
       (call set_status "Deleting note..." "false")
-      (let (req_body (str_join (list "{\"id\":\"" id "\"}") ""))
+      (let (req_body (encode_json (dict ("id" id))))
         (try_let (resp (fetch "/api/notes" "DELETE" req_body))
           (catch err
             (call set_status "Failed to delete note" "true")
@@ -250,6 +254,34 @@
 
   (on_event (dom_query "#cancel-edit-btn") "click" (lambda (e)
     (call cancel_edit)
+  ))
+
+  (on_event (dom_query "#edit-modal") "keydown" (lambda (e)
+    (let (content_input (dom_query "#edit-note-content"))
+      (let (save_button (dom_query "#save-edit-btn"))
+        (do
+          (if (= e.key "Escape")
+            (do (call cancel_edit) (call e.preventDefault) (set e.returnValue false))
+            (set e.returnValue true)
+          )
+          (if (= e.key "Tab")
+            (do
+              (if e.shiftKey
+                (if (= e.target content_input)
+                  (do (call save_button.focus) (call e.preventDefault) (set e.returnValue false))
+                  (set e.returnValue true)
+                )
+                (if (= e.target save_button)
+                  (do (call content_input.focus) (call e.preventDefault) (set e.returnValue false))
+                  (set e.returnValue true)
+                )
+              )
+            )
+            (set e.returnValue true)
+          )
+        )
+      )
+    )
   ))
 
   (call load_notes)

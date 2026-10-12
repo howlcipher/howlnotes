@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BIN_DIR="${REPO_ROOT}/bin"
 DEPS_DIR="${REPO_ROOT}/.deps"
 
-PINNED_HOWLFRAME_TAG="v0.1.0"
+PINNED_HOWLFRAME_REVISION="7631ce5d4008534ef681f35c3436922507d3f441"
 
 mkdir -p "${BIN_DIR}" "${DEPS_DIR}"
 
@@ -17,26 +17,21 @@ if [[ -n "${HOWLFRAME_BIN:-}" && -x "${HOWLFRAME_BIN}" ]]; then
   echo "==> Using explicit HOWLFRAME_BIN: ${HOWLFRAME_BIN}"
   ln -sf "${HOWLFRAME_BIN}" "${BIN_DIR}/howlframe"
 
-# 2. Standard $PATH resolution for installed HowlFrame release
-elif command -v howlframe >/dev/null 2>&1; then
-  SYSTEM_HOWLFRAME="$(command -v howlframe)"
-  echo "==> Using HowlFrame from PATH: ${SYSTEM_HOWLFRAME}"
-  ln -sf "${SYSTEM_HOWLFRAME}" "${BIN_DIR}/howlframe"
-
-# 3. Explicit developer source override (HOWLFRAME_ROOT)
+# 2. Explicit developer source override (HOWLFRAME_ROOT)
 elif [[ -n "${HOWLFRAME_ROOT:-}" && -d "${HOWLFRAME_ROOT}" ]]; then
   echo "==> Using explicit HOWLFRAME_ROOT: ${HOWLFRAME_ROOT}"
   HOWLFRAME_SRC="${HOWLFRAME_ROOT}"
 
-# 4. Bootstrap pinned HowlFrame release tag into local dependencies
+# 3. Bootstrap the verified immutable HowlFrame revision into local dependencies
 else
-  echo "==> Bootstrapping pinned HowlFrame (${PINNED_HOWLFRAME_TAG}) into ${DEPS_DIR}/howlframe"
+  echo "==> Bootstrapping pinned HowlFrame (${PINNED_HOWLFRAME_REVISION}) into ${DEPS_DIR}/howlframe"
   if [[ ! -d "${DEPS_DIR}/howlframe/.git" ]]; then
-    git clone --depth 1 --branch "${PINNED_HOWLFRAME_TAG}" https://github.com/howlcipher/howlframe.git "${DEPS_DIR}/howlframe"
+    git init "${DEPS_DIR}/howlframe"
   fi
   (
     cd "${DEPS_DIR}/howlframe"
-    git checkout "${PINNED_HOWLFRAME_TAG}"
+    git fetch --depth 1 https://github.com/howlcipher/howlframe.git "${PINNED_HOWLFRAME_REVISION}"
+    git checkout --detach "${PINNED_HOWLFRAME_REVISION}"
   )
   HOWLFRAME_SRC="${DEPS_DIR}/howlframe"
 fi
