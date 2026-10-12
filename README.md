@@ -15,7 +15,7 @@ It does not reside inside the HowlFrame tree or fake HowlFrame execution with ha
 HowlNotes is tested and verified against:
 
 * **Repository:** `howlcipher/howlframe`
-* **Pinned Revision:** `7cdc5116d426cc05c505d6457dc24aeb4fcc2046`
+* **Pinned Revision:** `7631ce5d4008534ef681f35c3436922507d3f441`
 * **HowlFrame Version:** `0.1.0` (HFBC Format v1)
 
 ---
@@ -57,7 +57,7 @@ Native File-Backed Store (file://data/notes.json)
 * Git
 
 ### 1. Bootstrap
-Resolve and build the HowlFrame compiler toolchain:
+Resolve and build the HowlFrame compiler toolchain from the verified immutable revision above (the older `v0.1.0` tag lacks backend constructs used by this app):
 ```bash
 ./scripts/bootstrap.sh
 ```

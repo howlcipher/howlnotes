@@ -10,3 +10,5 @@
 - Keep API/store identifiers in escaped data attributes, with constant action handlers; test adversarial identifiers remain inert.
 - Advertise the fixed bytecode port accurately even if `PORT` is set.
 - Add a Chromium regression test for literal CRUD/search, inert stored HTML, keyboard actions, mobile layout, validation and offline recovery.
+
+- Bootstrap fallback now fetches verified immutable HowlFrame revision `7631ce5d4008534ef681f35c3436922507d3f441` rather than the incompatible older release tag. CI runs the real Chromium regressions and preserves their evidence using the locally verified Go toolchain.
