@@ -61,7 +61,9 @@ Resolve and build the HowlFrame compiler toolchain from the verified immutable r
 ```bash
 ./scripts/bootstrap.sh
 ```
-*(Optionally set `HOWLFRAME_ROOT` or `HOWLFRAME_BIN` to point to a custom HowlFrame build).*
+Bootstrap fetches and builds the pinned source by default, requiring network access, Git and Go. It does not automatically select a `howlframe` executable from `PATH`: matching version strings do not establish the backend and browser contracts this app needs.
+
+Optionally set `HOWLFRAME_BIN` to an explicitly selected executable or `HOWLFRAME_ROOT` to a compatible source checkout. The binary override takes precedence when both are provided; explicit overrides are developer choices outside the default pin.
 
 ### 2. Build
 Compile HowlFrame source files:

@@ -17,18 +17,12 @@ if [[ -n "${HOWLFRAME_BIN:-}" && -x "${HOWLFRAME_BIN}" ]]; then
   echo "==> Using explicit HOWLFRAME_BIN: ${HOWLFRAME_BIN}"
   ln -sf "${HOWLFRAME_BIN}" "${BIN_DIR}/howlframe"
 
-# 2. Standard $PATH resolution for installed HowlFrame release
-elif command -v howlframe >/dev/null 2>&1; then
-  SYSTEM_HOWLFRAME="$(command -v howlframe)"
-  echo "==> Using HowlFrame from PATH: ${SYSTEM_HOWLFRAME}"
-  ln -sf "${SYSTEM_HOWLFRAME}" "${BIN_DIR}/howlframe"
-
-# 3. Explicit developer source override (HOWLFRAME_ROOT)
+# 2. Explicit developer source override (HOWLFRAME_ROOT)
 elif [[ -n "${HOWLFRAME_ROOT:-}" && -d "${HOWLFRAME_ROOT}" ]]; then
   echo "==> Using explicit HOWLFRAME_ROOT: ${HOWLFRAME_ROOT}"
   HOWLFRAME_SRC="${HOWLFRAME_ROOT}"
 
-# 4. Bootstrap the verified immutable HowlFrame revision into local dependencies
+# 3. Bootstrap the verified immutable HowlFrame revision into local dependencies
 else
   echo "==> Bootstrapping pinned HowlFrame (${PINNED_HOWLFRAME_REVISION}) into ${DEPS_DIR}/howlframe"
   if [[ ! -d "${DEPS_DIR}/howlframe/.git" ]]; then
