@@ -1,5 +1,11 @@
 function howlFrameGrantHas(name) {
-  var raw = process.env.HOWLFRAME_ALLOW_CAPS || "";
+  var raw = "";
+  if (typeof process !== "undefined" && process.env) {
+    raw = process.env.HOWLFRAME_ALLOW_CAPS || "";
+  } else if (typeof globalThis !== "undefined") {
+    raw = globalThis.HOWLFRAME_ALLOW_CAPS;
+  }
+  if (typeof raw !== "string") return false;
   var parts = raw.split(",");
   for (var i = 0; i < parts.length; i++) {
     if (parts[i].trim() === name) return true;
@@ -154,6 +160,21 @@ function howlFrameListLen(list) {
   }
   return list.length;
 }
+function howlFrameHTMLEscape(kind, v) {
+  if (typeof v !== "string") {
+    throw new Error("TYPE_ERROR: " + kind + " expected string, got " + (v === null ? "null" : typeof v));
+  }
+  return v.replace(/[&<>"']/g, function (c) {
+    switch (c) {
+      case "&": return "&amp;";
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case '"': return "&#34;";
+      case "'": return "&#39;";
+      default: return c;
+    }
+  });
+}
 async function set_status(message, is_error) {
 //line frontend.howl:4
 {
@@ -187,7 +208,7 @@ banner.setAttribute("style", "display: block;");
 async function render_note(note) {
 //line frontend.howl:26
 {
-let id = String(howlFrameMapGet(note, "id"));
+let id = howlFrameHTMLEscape("attr_escape", String(howlFrameMapGet(note, "id")));
 let content = String(howlFrameMapGet(note, "content"));
 let created_at = String(howlFrameMapGet(note, "created_at"));
 let updated_at = String(howlFrameMapGet(note, "updated_at"));
@@ -197,15 +218,15 @@ let html = "";
 //line frontend.howl:32
 html = (["<div class=\"note-card\" id=\"note-", id, "\">"]).join("");
 //line frontend.howl:33
-html = ([html, "<div class=\"note-header\"><span class=\"note-badge\">Note #", id, "</span><span class=\"note-timestamp\">", created_at, "</span></div>"]).join("");
+html = ([html, "<div class=\"note-header\"><span class=\"note-badge\">Note #", id, "</span><span class=\"note-timestamp\">", howlFrameHTMLEscape("html_escape", created_at), "</span></div>"]).join("");
 //line frontend.howl:34
-html = ([html, "<div class=\"note-body\" id=\"note-content-", id, "\">", content, "</div>"]).join("");
+html = ([html, "<div class=\"note-body\" id=\"note-content-", id, "\">", howlFrameHTMLEscape("html_escape", content), "</div>"]).join("");
 //line frontend.howl:35
 html = ([html, "<div class=\"note-actions\">"]).join("");
 //line frontend.howl:36
-html = ([html, "<button class=\"btn btn-secondary\" onclick=\"start_edit('", id, "','", content, "')\">Edit</button>"]).join("");
+html = ([html, "<button class=\"btn btn-secondary\" data-note-id=\"", id, "\" onclick=\"start_edit(this.dataset.noteId)\">Edit</button>"]).join("");
 //line frontend.howl:37
-html = ([html, "<button class=\"btn btn-danger\" onclick=\"delete_note('", id, "')\">Delete</button>"]).join("");
+html = ([html, "<button class=\"btn btn-danger\" data-note-id=\"", id, "\" onclick=\"delete_note(this.dataset.noteId)\">Delete</button>"]).join("");
 //line frontend.howl:38
 html = ([html, "</div></div>"]).join("");
 //line frontend.howl:39
@@ -265,7 +286,7 @@ let match = true;
 //line frontend.howl:69
 if ((filter_text !== "")) {
 //line frontend.howl:70
-if ((new RegExp(filter_text).test(content) === false)) {
+if (((howlFrameListLen((content).split(filter_text)) > 1) === false)) {
 //line frontend.howl:71
 match = false
 } else {
@@ -339,7 +360,7 @@ if ((howlFrameListLen((content).split("")) > 10000)) {
 (await set_status("Saving note...", "false"));
 //line frontend.howl:115
 {
-let req_body = (["{\"content\":\"", content, "\"}"]).join("");
+let req_body = JSON.stringify({"content": content});
 //line frontend.howl:116
 {
 	let resp;
@@ -376,7 +397,8 @@ if ((err_msg !== "")) {
 } else {
 //line frontend.howl:127
 {
-input.setAttribute("value", "");
+//line frontend.howl:128
+input.value = "";
 //line frontend.howl:129
 (await set_status("Note created successfully!", "false"));
 //line frontend.howl:130
@@ -396,7 +418,7 @@ input.setAttribute("value", "");
 }
 }
 
-async function start_edit(id, content) {
+async function start_edit(id) {
 //line frontend.howl:146
 {
 let modal = document.querySelector("#edit-modal");
@@ -405,50 +427,63 @@ let content_input = document.querySelector("#edit-note-content");
 //line frontend.howl:149
 {
 id_input.setAttribute("value", id);
-content_input.setAttribute("value", content);
+//line frontend.howl:151
+{
+let content_node = (await document.getElementById((["note-content-", id]).join("")));
+//line frontend.howl:152
+content_input.value = content_node.textContent
+};
 modal.setAttribute("style", "display: flex;");
+//line frontend.howl:155
+(await content_input.focus());
 }
 }
 }
 
 async function cancel_edit() {
-//line frontend.howl:160
+//line frontend.howl:163
 {
 let modal = document.querySelector("#edit-modal");
-//line frontend.howl:161
+//line frontend.howl:164
 {
 modal.setAttribute("style", "display: none;");
-//line frontend.howl:163
+//line frontend.howl:166
+{
+let input = document.querySelector("#new-note-content");
+//line frontend.howl:166
+(await input.focus())
+};
+//line frontend.howl:167
 (await set_status("", "false"));
 }
 }
 }
 
 async function save_edit() {
-//line frontend.howl:169
+//line frontend.howl:173
 {
 let id = document.querySelector("#edit-note-id").value;
 let content = document.querySelector("#edit-note-content").value;
-//line frontend.howl:171
+//line frontend.howl:175
 {
-//line frontend.howl:172
+//line frontend.howl:176
 if ((content === "")) {
-//line frontend.howl:173
+//line frontend.howl:177
 (await set_status("Note content cannot be empty", "true"))
 } else {
-//line frontend.howl:174
+//line frontend.howl:178
 if ((howlFrameListLen((content).split("")) > 10000)) {
-//line frontend.howl:175
+//line frontend.howl:179
 (await set_status("Note content exceeds 10,000 characters limit", "true"))
 } else {
-//line frontend.howl:176
+//line frontend.howl:180
 {
-//line frontend.howl:177
+//line frontend.howl:181
 (await set_status("Updating note...", "false"));
-//line frontend.howl:178
+//line frontend.howl:182
 {
-let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join("");
-//line frontend.howl:179
+let req_body = JSON.stringify({"id": id, "content": content});
+//line frontend.howl:183
 {
 	let resp;
 	let err = null;
@@ -458,10 +493,10 @@ let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join(""
 		err = e;
 	}
 	if (err !== null) {
-		//line frontend.howl:181
+		//line frontend.howl:185
 (await set_status("Failed to update note", "true"))
 	} else {
-		//line frontend.howl:183
+		//line frontend.howl:187
 {
 	let json_resp;
 	let parse_err = null;
@@ -471,24 +506,24 @@ let req_body = (["{\"id\":\"", id, "\",\"content\":\"", content, "\"}"]).join(""
 		parse_err = e;
 	}
 	if (parse_err !== null) {
-		//line frontend.howl:185
+		//line frontend.howl:189
 (await set_status("Server error while updating note", "true"))
 	} else {
-		//line frontend.howl:187
+		//line frontend.howl:191
 {
 let err_msg = howlFrameMapGet(json_resp, "error");
-//line frontend.howl:188
+//line frontend.howl:192
 if ((err_msg !== "")) {
-//line frontend.howl:189
+//line frontend.howl:193
 (await set_status(err_msg, "true"))
 } else {
-//line frontend.howl:190
+//line frontend.howl:194
 {
-//line frontend.howl:191
+//line frontend.howl:195
 (await cancel_edit());
-//line frontend.howl:192
+//line frontend.howl:196
 (await set_status("Note updated successfully!", "false"));
-//line frontend.howl:193
+//line frontend.howl:197
 (await load_notes());
 }
 }
@@ -506,14 +541,14 @@ if ((err_msg !== "")) {
 }
 
 async function delete_note(id) {
-//line frontend.howl:209
+//line frontend.howl:213
 {
-//line frontend.howl:210
+//line frontend.howl:214
 (await set_status("Deleting note...", "false"));
-//line frontend.howl:211
+//line frontend.howl:215
 {
-let req_body = (["{\"id\":\"", id, "\"}"]).join("");
-//line frontend.howl:212
+let req_body = JSON.stringify({"id": id});
+//line frontend.howl:216
 {
 	let resp;
 	let err = null;
@@ -523,10 +558,10 @@ let req_body = (["{\"id\":\"", id, "\"}"]).join("");
 		err = e;
 	}
 	if (err !== null) {
-		//line frontend.howl:214
+		//line frontend.howl:218
 (await set_status("Failed to delete note", "true"))
 	} else {
-		//line frontend.howl:216
+		//line frontend.howl:220
 {
 	let json_resp;
 	let parse_err = null;
@@ -536,22 +571,22 @@ let req_body = (["{\"id\":\"", id, "\"}"]).join("");
 		parse_err = e;
 	}
 	if (parse_err !== null) {
-		//line frontend.howl:218
+		//line frontend.howl:222
 (await set_status("Server error while deleting note", "true"))
 	} else {
-		//line frontend.howl:220
+		//line frontend.howl:224
 {
 let err_msg = howlFrameMapGet(json_resp, "error");
-//line frontend.howl:221
+//line frontend.howl:225
 if ((err_msg !== "")) {
-//line frontend.howl:222
+//line frontend.howl:226
 (await set_status(err_msg, "true"))
 } else {
-//line frontend.howl:223
+//line frontend.howl:227
 {
-//line frontend.howl:224
+//line frontend.howl:228
 (await set_status("Note deleted successfully!", "false"));
-//line frontend.howl:225
+//line frontend.howl:229
 (await load_notes());
 }
 }
@@ -566,29 +601,101 @@ if ((err_msg !== "")) {
 
 ;(async () => {
 document.querySelector("#create-btn").addEventListener("click", async (e) => {
-//line frontend.howl:236
+//line frontend.howl:240
 (await create_note())
 });
 document.querySelector("#search-input").addEventListener("input", async (e) => {
-//line frontend.howl:240
-(await load_notes())
-});
-document.querySelector("#refresh-btn").addEventListener("click", async (e) => {
 //line frontend.howl:244
 (await load_notes())
 });
-document.querySelector("#save-edit-btn").addEventListener("click", async (e) => {
+document.querySelector("#refresh-btn").addEventListener("click", async (e) => {
 //line frontend.howl:248
+(await load_notes())
+});
+document.querySelector("#save-edit-btn").addEventListener("click", async (e) => {
+//line frontend.howl:252
 (await save_edit())
 });
 document.querySelector("#cancel-edit-btn").addEventListener("click", async (e) => {
-//line frontend.howl:252
+//line frontend.howl:256
 (await cancel_edit())
 });
-//line frontend.howl:255
+document.querySelector("#edit-modal").addEventListener("keydown", async (e) => {
+//line frontend.howl:260
+{
+let content_input = document.querySelector("#edit-note-content");
+let save_button = document.querySelector("#save-edit-btn");
+//line frontend.howl:262
+{
+//line frontend.howl:263
+if ((e.key === "Escape")) {
+//line frontend.howl:264
+{
+//line frontend.howl:264
+(await cancel_edit());
+//line frontend.howl:264
+(await e.preventDefault());
+//line frontend.howl:264
+e.returnValue = false;
+}
+} else {
+//line frontend.howl:265
+e.returnValue = true
+};
+//line frontend.howl:267
+if ((e.key === "Tab")) {
+//line frontend.howl:268
+{
+//line frontend.howl:269
+if (e.shiftKey) {
+//line frontend.howl:270
+if ((e.target === content_input)) {
+//line frontend.howl:271
+{
+//line frontend.howl:271
+(await save_button.focus());
+//line frontend.howl:271
+(await e.preventDefault());
+//line frontend.howl:271
+e.returnValue = false;
+}
+} else {
+//line frontend.howl:272
+e.returnValue = true
+}
+} else {
+//line frontend.howl:274
+if ((e.target === save_button)) {
+//line frontend.howl:275
+{
+//line frontend.howl:275
+(await content_input.focus());
+//line frontend.howl:275
+(await e.preventDefault());
+//line frontend.howl:275
+e.returnValue = false;
+}
+} else {
+//line frontend.howl:276
+e.returnValue = true
+}
+};
+}
+} else {
+//line frontend.howl:280
+e.returnValue = true
+};
+}
+}
+});
+//line frontend.howl:287
 (await load_notes())
 
 })().catch((err) => {
   console.error(err && err.message ? err.message : err);
-  process.exit(1);
+  if (typeof process !== "undefined" && typeof process.exit === "function") {
+    process.exit(1);
+  } else {
+    throw err;
+  }
 });

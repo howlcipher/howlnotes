@@ -18,6 +18,6 @@ echo "==> [1/2] Compiling HowlFrame backend (app/backend.howl -> build/backend.h
 "${BIN}" -compile-bc "${REPO_ROOT}/app/backend.howl" -o "${BUILD_DIR}/backend.hfbc"
 
 echo "==> [2/2] Compiling HowlFrame frontend (app/frontend.howl -> static/app.js)..."
-"${BIN}" "${REPO_ROOT}/app/frontend.howl" -o "${STATIC_DIR}/"
+"${BIN}" build --target=js "${REPO_ROOT}/app/frontend.howl" -o "${STATIC_DIR}/"
 
 echo "==> Build complete!"

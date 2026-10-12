@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BIN="${REPO_ROOT}/bin/howlframe"
 BUILD_DIR="${REPO_ROOT}/build"
-PORT="${PORT:-8088}"
+PORT="8088" # The port is declared in app/backend.howl and compiled into bytecode.
 
 if [[ ! -x "${BIN}" || ! -f "${BUILD_DIR}/backend.hfbc" || ! -f "${REPO_ROOT}/static/app.js" ]]; then
   echo "==> Building HowlNotes before running..."

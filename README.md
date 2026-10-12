@@ -69,14 +69,15 @@ Compile HowlFrame source files:
 ./scripts/build.sh
 ```
 * Compiles `app/backend.howl` -> `build/backend.hfbc` (standalone bytecode)
-* Compiles `app/frontend.howl` -> `static/app.js` (browser client)
+* Compiles `app/frontend.howl` -> `static/app.js` with `build --target=js` (browser client)
+* The HTML host grants only `network` to the generated browser client.
 
 ### 3. Run
 Start the HowlNotes server:
 ```bash
 ./scripts/run.sh
 ```
-Then open your browser at **`http://localhost:8088`**.
+Then open your browser at **`http://localhost:8088`**. The port is compiled from `app/backend.howl`; changing a `PORT` environment variable does not override it.
 
 ---
 
@@ -96,6 +97,20 @@ Tests cover:
 * True process-restart persistence
 
 ---
+
+### Browser regression checks
+
+With an isolated server running through `./scripts/run.sh`, install Python Playwright and Chromium, then run:
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
+python3 tests/browser_test.py
+```
+
+Set `HOWLNOTES_URL` to change the test URL and `HOWLNOTES_EVIDENCE` to choose the screenshot/result directory. The test creates and deletes its own note; use a disposable development store. It covers literal punctuation and Unicode CRUD/search, inert stored HTML, keyboard input, desktop/mobile layout, validation, offline recovery and reload. The native suite separately verifies process-restart persistence. The edit dialog focuses its textarea, contains Tab/Shift+Tab and closes with Escape.
+
+Note content is displayed as literal text. Edit reads that text from the DOM instead of placing content inside JavaScript. Search performs a case-sensitive literal substring match.
 
 ## Dogfooding & Architecture Reports
 
