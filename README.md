@@ -27,7 +27,7 @@ HowlNotes is tested and verified against:
 * **Capability-Enforced Runtime:** The backend executes inside the HowlFrame Bytecode VM under strict runner-granted capabilities (`network,database,filesystem`).
 * **Input Validation & Error Handling:** Handles malformed JSON, empty fields, oversized notes, and nonexistent records.
 * **Restrained Vanilla UI:** Responsive, clean interface compiled from HowlFrame `web_app` DSL to vanilla browser JavaScript.
-* **100% Automated Test Suite:** End-to-end testing covering CRUD, persistence across server restart, capability denials, and compilation.
+* **Automated Verification:** Native tests assert network startup denial and database/filesystem denial for reads and writes, CRUD, process-restart persistence and compilation. Chromium tests cover the browser workflow and inert stored HTML.
 
 ---
 
@@ -90,7 +90,7 @@ Run the automated E2E test suite:
 
 Tests cover:
 * Compilation and AST validation
-* Capability denial verification (missing `network`, `database`, or `filesystem`)
+* Network startup denial; database/filesystem HTTP 500 `CAPABILITY_DENIED` diagnostics for both GET and POST, unchanged store, and a healthy server after rejection
 * Complete CRUD lifecycle
 * Input validation & error responses (400, 404)
 * Static asset delivery

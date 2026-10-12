@@ -148,62 +148,78 @@ func TestCapabilityDenial(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected failure without network capability, got success")
 		}
-		if !strings.Contains(string(out), "CAPABILITY_DENIED") && !strings.Contains(string(out), "network") {
+		if !strings.Contains(string(out), "CAPABILITY_DENIED") || !strings.Contains(string(out), "capability denied: network") {
 			t.Fatalf("expected CAPABILITY_DENIED for network, got: %s", string(out))
 		}
 	})
 
-	t.Run("DenyWhenNoDatabaseCapability", func(t *testing.T) {
-		// Server can start with network+filesystem, but first store request will be denied
-		cmd := exec.Command(bin, "-run-bc", "-allow-caps", "network,filesystem", bcFile)
-		cmd.Dir = repoRoot
-		var stdoutBuf, stderrBuf bytes.Buffer
-		cmd.Stdout = &stdoutBuf
-		cmd.Stderr = &stderrBuf
-		if err := cmd.Start(); err != nil {
-			t.Fatalf("failed to start process: %v", err)
-		}
-		defer func() {
-			if cmd.Process != nil {
-				_ = cmd.Process.Kill()
-				_ = cmd.Wait()
+	for _, tc := range []struct {
+		name    string
+		grants  string
+		missing string
+	}{
+		{"DenyWhenNoDatabaseCapability", "network,filesystem", "database"},
+		{"DenyWhenNoFilesystemCapability", "network,database", "filesystem"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dataFile := filepath.Join(repoRoot, "data", "notes.json")
+			before, err := os.ReadFile(dataFile)
+			beforeExists := err == nil
+			if err != nil && !os.IsNotExist(err) {
+				t.Fatalf("read store before denial: %v", err)
 			}
-		}()
-
-		// Wait for listener
-		time.Sleep(200 * time.Millisecond)
-
-		// Send request that needs database capability
-		resp, err := http.Get("http://localhost:8088/api/notes")
-		if err == nil {
-			defer resp.Body.Close()
-		}
-		// Process should have crashed or paniced inside handler with CAPABILITY_DENIED
-	})
-
-	t.Run("DenyWhenNoFilesystemCapability", func(t *testing.T) {
-		// Server started without filesystem capability for file:// store
-		cmd := exec.Command(bin, "-run-bc", "-allow-caps", "network,database", bcFile)
-		cmd.Dir = repoRoot
-		var stdoutBuf, stderrBuf bytes.Buffer
-		cmd.Stdout = &stdoutBuf
-		cmd.Stderr = &stderrBuf
-		if err := cmd.Start(); err != nil {
-			t.Fatalf("failed to start process: %v", err)
-		}
-		defer func() {
-			if cmd.Process != nil {
-				_ = cmd.Process.Kill()
-				_ = cmd.Wait()
+			_, cleanup := startServer(t, bin, tc.grants, "8088")
+			defer cleanup()
+			client := &http.Client{Timeout: 2 * time.Second}
+			for _, method := range []string{http.MethodGet, http.MethodPost} {
+				req, err := http.NewRequest(method, "http://localhost:8088/api/notes", strings.NewReader(`{"content":"must not persist without grant"}`))
+				if err != nil {
+					t.Fatal(err)
+				}
+				req.Header.Set("Content-Type", "application/json")
+				resp, err := client.Do(req)
+				if err != nil {
+					t.Fatalf("%s expected structured HTTP denial, got transport error: %v", method, err)
+				}
+				body, readErr := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if readErr != nil {
+					t.Fatalf("read %s denial: %v", method, readErr)
+				}
+				if resp.StatusCode != http.StatusInternalServerError {
+					t.Fatalf("%s without %s expected HTTP 500 capability denial, got %d: %s", method, tc.missing, resp.StatusCode, body)
+				}
+				var diagnostic struct {
+					Phase   string `json:"phase"`
+					Code    string `json:"code"`
+					Opcode  string `json:"opcode"`
+					Message string `json:"message"`
+				}
+				if err := json.Unmarshal(body, &diagnostic); err != nil {
+					t.Fatalf("%s denial must be structured JSON: %v; body: %s", method, err, body)
+				}
+				if diagnostic.Phase != "runtime" || diagnostic.Code != "CAPABILITY_DENIED" || diagnostic.Opcode != "STORE_OPEN" || diagnostic.Message != "capability denied: "+tc.missing {
+					t.Fatalf("%s unexpected denial diagnostic: %+v", method, diagnostic)
+				}
 			}
-		}()
+			after, err := os.ReadFile(dataFile)
+			if err != nil && !os.IsNotExist(err) {
+				t.Fatalf("read store after denial: %v", err)
+			}
+			if beforeExists != (err == nil) || !bytes.Equal(before, after) {
+				t.Fatal("denied requests changed the persistent store")
+			}
+			resp, err := client.Get("http://localhost:8088/api/health")
+			if err != nil {
+				t.Fatalf("server did not survive denied requests: %v", err)
+			}
+			resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("health after denied requests: expected 200, got %d", resp.StatusCode)
+			}
+		})
+	}
 
-		time.Sleep(200 * time.Millisecond)
-		resp, err := http.Get("http://localhost:8088/api/notes")
-		if err == nil {
-			defer resp.Body.Close()
-		}
-	})
 }
 
 func TestNotesEndToEndAndPersistence(t *testing.T) {

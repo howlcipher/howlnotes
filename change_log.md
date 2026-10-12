@@ -12,3 +12,5 @@
 - Add a Chromium regression test for literal CRUD/search, inert stored HTML, keyboard actions, mobile layout, validation and offline recovery.
 
 - Bootstrap fallback now fetches verified immutable HowlFrame revision `7631ce5d4008534ef681f35c3436922507d3f441` rather than the incompatible older release tag. CI runs the real Chromium regressions and preserves their evidence using the locally verified Go toolchain.
+
+- Replace database/filesystem capability tests that made no assertions with real GET and POST denial checks: HTTP 500, exact structured `CAPABILITY_DENIED`/`STORE_OPEN` diagnostic, unchanged persistent store and server survival. Tighten network denial assertions. An isolated grant-leak fault experiment passes the old tests and fails both corrected tests; the actual runtime passes the corrected suite.
