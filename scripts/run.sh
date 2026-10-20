@@ -22,4 +22,7 @@ echo " Storage URI:   file://data/notes.json"
 echo " Bytecode:      ${BUILD_DIR}/backend.hfbc"
 echo "=========================================================="
 
+# The backend reads static/ and stores file://data/notes.json relative to the
+# working directory, so run from the repository root wherever this is called.
+cd "${REPO_ROOT}"
 exec "${BIN}" -run-bc -allow-caps network,database,filesystem "${BUILD_DIR}/backend.hfbc"
